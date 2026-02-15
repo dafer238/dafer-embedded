@@ -1,0 +1,19 @@
+__pycache__/
+*.exe
+*.ilk
+*.obj
+*.pdb
+
+build/
+pcb/
+tests/
+test/
+logs/
+.vscode/
+legacy/
+
+# Sensitive / auto-generated config
+.env
+sdkconfig
+sdkconfig.old
+*.db

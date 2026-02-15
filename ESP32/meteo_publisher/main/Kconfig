@@ -1,0 +1,155 @@
+menu "Sensor node configuration"
+
+config NODE_NAME
+    string "Node name (device_id)"
+    help
+        Logical name of this ESP32 node.
+        Used as device_id and MQTT topic component.
+
+config PUBLISH_INTERVAL
+    int "Publish interval (milliseconds)"
+    default 54500
+    help
+        Time between measurements in deep sleep (in milliseconds).
+
+config FW_VERSION
+    string "Firmware version"
+    default "0.1.0"
+
+menu "WiFi Configuration"
+
+config WIFI_SSID
+    string "WiFi SSID"
+    default "my_wifi"
+    help
+        WiFi network name to connect to.
+
+config WIFI_PASS
+    string "WiFi Password"
+    default "my_password"
+    help
+        WiFi network password.
+
+endmenu
+
+menu "MQTT Configuration"
+
+config MQTT_BROKER_URI
+    string "MQTT Broker URI"
+    default "mqtt://<BROKER_IP>"
+    help
+        URI of the MQTT broker (e.g. mqtt://<BROKER_IP> or mqtt://broker.local).
+
+config MQTT_USERNAME
+    string "MQTT Username"
+    default "mqtt_user"
+    help
+        Username for MQTT broker authentication.
+
+config MQTT_PASSWORD
+    string "MQTT Password"
+    default "mqtt_pass"
+    help
+        Password for MQTT broker authentication.
+
+endmenu
+
+menu "Sensor Configuration"
+
+config BMP280_ENABLED
+    bool "Enable BMP280 sensor"
+    default y
+    help
+        Enable BMP280 temperature and pressure sensor.
+        BMP280 uses I2C (address 0x76 or 0x77).
+
+config DHT22_ENABLED
+    bool "Enable DHT22 sensor"
+    default n
+    help
+        Enable DHT22 temperature and humidity sensor.
+        DHT22 uses 1-wire protocol (bit-banging).
+        Note: DHT22 is slower and more CPU-intensive than AHT20.
+
+config AHT20_ENABLED
+    bool "Enable AHT20 sensor"
+    default y
+    help
+        Enable AHT20 temperature and humidity sensor.
+        AHT20 uses I2C (fixed address 0x38).
+        Recommended over DHT22 for better accuracy and speed.
+
+endmenu
+
+menu "Hardware Configuration"
+
+config LED_GPIO
+    int "Onboard LED GPIO"
+    default 2
+    help
+        GPIO pin for status LED (typically GPIO 2 on most ESP32 boards).
+        LED will blink during operation and signal successful MQTT publish.
+
+config LED_SIGNALING_ENABLED
+    bool "Enable LED signaling"
+    default y
+    help
+        Enable LED signaling for sensor initialization, MQTT publish, etc.
+        Disable to save power in battery-operated devices.
+
+choice LED_TYPE
+    prompt "LED type for signaling"
+    default LED_TYPE_BUILTIN
+    depends on LED_SIGNALING_ENABLED
+    help
+        Select which LED to use for status signaling.
+
+    config LED_TYPE_BUILTIN
+        bool "Built-in LED"
+        help
+            Use the built-in LED (CONFIG_LED_GPIO) for signaling.
+
+    config LED_TYPE_RGB
+        bool "RGB NeoPixel LED"
+        help
+            Use the RGB NeoPixel LED for signaling.
+endchoice
+
+config NEOPIXEL_GPIO
+    int "NeoPixel RGB LED GPIO"
+    default 48
+    depends on LED_TYPE_RGB
+    help
+        GPIO pin for NeoPixel RGB LED (typically GPIO 47 or 48 on ESP32-S3).
+
+config DHT22_GPIO
+    int "DHT22 data GPIO"
+    default 4
+    depends on DHT22_ENABLED
+    help
+        GPIO pin connected to DHT22 data line.
+
+config BMP280_I2C_ADDR
+    hex "BMP280 I2C address"
+    default 0x77
+    depends on BMP280_ENABLED
+    help
+        I2C address of BMP280 sensor (typically 0x76 or 0x77).
+
+config I2C_SDA_GPIO
+    int "I2C SDA GPIO"
+    default 8
+    depends on BMP280_ENABLED || AHT20_ENABLED
+    help
+        GPIO pin for I2C SDA (data line).
+
+config I2C_SCL_GPIO
+    int "I2C SCL GPIO"
+    default 9
+    depends on BMP280_ENABLED || AHT20_ENABLED
+    help
+        GPIO pin for I2C SCL (clock line).
+
+endmenu
+
+endmenu

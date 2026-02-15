@@ -1,0 +1,18 @@
+[Unit]
+Description=Meteo Web Dashboard Service
+After=network.target meteo-mqtt.service
+
+[Service]
+Type=simple
+User=<your_user>
+WorkingDirectory=/home/<your_user>/dafer-embedded/orangepi/meteo_subscriber
+ExecStart=/bin/bash -c 'source /path/to/your/venv/bin/activate && uvicorn web_server:app --host 0.0.0.0 --port 8002'
+Restart=always
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=meteo-web
+
+[Install]
+WantedBy=multi-user.target
